@@ -209,6 +209,7 @@ class cyclegan(object):
             return False
 
     def sample_model(self, sample_dir, epoch, idx):
+        print "sample model"
         dataA = glob('./datasets/{}/*.*'.format(self.dataset_dir + '/testA'))
         dataB = glob('./datasets/{}/*.*'.format(self.dataset_dir + '/testB'))
         np.random.shuffle(dataA)
@@ -266,3 +267,16 @@ class cyclegan(object):
                 '..' + os.path.sep + image_path)))
             index.write("</tr>")
         index.close()
+
+    # def test(self, args):
+    #     """Test cyclegan"""
+    #     init_op = tf.global_variables_initializer()
+    #     self.sess.run(init_op)
+    #     if self.load(args.checkpoint_dir):
+    #         print(" [*] Load SUCCESS")
+    #     else:
+    #         print(" [!] Load failed...")
+    #     self.sample_model(args.sample_dir, 99, 0)
+
+
+

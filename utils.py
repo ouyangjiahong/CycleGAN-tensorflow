@@ -42,6 +42,9 @@ def load_test_data(image_path, is_grayscale = False, fine_size=256):
     img = imread(image_path, is_grayscale)
     img = scipy.misc.imresize(img, [fine_size, fine_size])
     img = img/127.5 - 1
+    if is_grayscale == True:
+        row, col = img.shape
+        img = img.reshape((row, col, 1))
     return img
 
 def load_train_data(image_path, load_size=286, fine_size=256, is_grayscale = False, is_testing=False):
@@ -126,3 +129,4 @@ def transform(image, npx=64, is_crop=True, resize_w=64):
 
 def inverse_transform(images):
     return (images+1.)/2.
+    # return np.matrix.round(((images+1.)*127))
