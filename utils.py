@@ -38,15 +38,15 @@ class ImagePool(object):
         else:
             return image
 
-def load_test_data(image_path, fine_size=256):
-    img = imread(image_path)
+def load_test_data(image_path, is_grayscale = False, fine_size=256):
+    img = imread(image_path, is_grayscale)
     img = scipy.misc.imresize(img, [fine_size, fine_size])
     img = img/127.5 - 1
     return img
 
-def load_train_data(image_path, load_size=286, fine_size=256, is_testing=False):
-    img_A = imread(image_path[0])
-    img_B = imread(image_path[1])
+def load_train_data(image_path, load_size=286, fine_size=256, is_grayscale = False, is_testing=False):
+    img_A = imread(image_path[0], is_grayscale)
+    img_B = imread(image_path[1], is_grayscale)
     if not is_testing:
         img_A = scipy.misc.imresize(img_A, [load_size, load_size])
         img_B = scipy.misc.imresize(img_B, [load_size, load_size])
@@ -64,6 +64,13 @@ def load_train_data(image_path, load_size=286, fine_size=256, is_testing=False):
 
     img_A = img_A/127.5 - 1.
     img_B = img_B/127.5 - 1.
+
+    if is_grayscale == True:
+        row, col = img_A.shape
+        img_A = img_A.reshape((row, col, 1))
+        row, col = img_B.shape
+        img_B = img_B.reshape((row, col, 1))
+        #print img_A.shape
 
     img_AB = np.concatenate((img_A, img_B), axis=2)
     # img_AB shape: (fine_size, fine_size, input_c_dim + output_c_dim)

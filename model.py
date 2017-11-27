@@ -17,6 +17,10 @@ class cyclegan(object):
         self.image_size = args.fine_size
         self.input_c_dim = args.input_nc
         self.output_c_dim = args.output_nc
+        if self.input_c_dim == 1:
+            self.grayscale = True
+        else:
+            self.grayscale = False
         self.L1_lambda = args.L1_lambda
         self.dataset_dir = args.dataset_dir
 
@@ -149,7 +153,7 @@ class cyclegan(object):
             for idx in range(0, batch_idxs):
                 batch_files = list(zip(dataA[idx * self.batch_size:(idx + 1) * self.batch_size],
                                        dataB[idx * self.batch_size:(idx + 1) * self.batch_size]))
-                batch_images = [load_train_data(batch_file, args.load_size, args.fine_size) for batch_file in batch_files]
+                batch_images = [load_train_data(batch_file, args.load_size, args.fine_size, self.grayscale) for batch_file in batch_files]
                 batch_images = np.array(batch_images).astype(np.float32)
 
                 # Update G network and record fake outputs
@@ -211,9 +215,8 @@ class cyclegan(object):
         np.random.shuffle(dataB)
         batch_files = list(zip(dataA[:self.batch_size], dataB[:self.batch_size]))
         # test data also resize to fine_size
-        sample_images = [load_train_data(batch_file, self.image_size, is_testing=True) for batch_file in batch_files]
+        sample_images = [load_train_data(batch_file, fine_size=self.image_size, is_grayscale=self.grayscale, is_testing=True) for batch_file in batch_files]
         sample_images = np.array(sample_images).astype(np.float32)
-
         fake_A, fake_B = self.sess.run(
             [self.fake_A, self.fake_B],
             feed_dict={self.real_data: sample_images}
@@ -250,7 +253,7 @@ class cyclegan(object):
 
         for sample_file in sample_files:
             print('Processing image: ' + sample_file)
-            sample_image = [load_test_data(sample_file, args.fine_size)]
+            sample_image = [load_test_data(sample_file, self.grayscale, args.fine_size)]
             sample_image = np.array(sample_image).astype(np.float32)
             image_path = os.path.join(args.test_dir,
                                       '{0}_{1}'.format(args.which_direction, os.path.basename(sample_file)))
